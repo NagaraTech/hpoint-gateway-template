@@ -1,0 +1,31 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+package gateway;
+
+
+service Gateway {
+    rpc GetEvent(google.protobuf.Empty) returns (stream Event);
+}
+
+message GatewayResponse{
+    repeated Event events = 1;
+}
+
+
+message Event {
+    EventType event_type = 1;
+    int64 timestamp = 2;
+    string address = 3;
+    string project_name = 4;
+    string sign = 5;
+    string sign_method = 6;
+    string event_date = 7;
+    int32 duration = 8;
+}
+
+enum EventType {
+    CHECK_IN = 0;
+    ONLINE_TIME = 1;
+}
+
