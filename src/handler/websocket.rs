@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use tokio_tungstenite::tungstenite::protocol::Message as WsMessage;
 use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
@@ -41,7 +42,9 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
     match get_ws_conn().await {
         Ok(ws_conn) => {
             println!("Successfully connected to WebSocket");
+
             let (mut write, mut read) = ws_conn.split();
+
             let conn = get_db_conn().await;
 
             let now = Utc::now();
@@ -54,8 +57,9 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
                 .filter(relay_events::Column::TimeStamp.lte(end_of_day))
                 .all(conn).await.expect("REASON");
 
-            for event in relay_events {
+            println!("{}", relay_events.len());
 
+            for event in relay_events {
                 println!("{}", event.event_type.clone());
 
                 let send_event_bytes: Vec<u8> = bincode::serialize(&crate::handler::gateway::Event {
@@ -67,7 +71,7 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
                     sign_method: "ED25519".parse().unwrap(),
                     event_date: event.event_date.to_string(),
                     duration: event.duration.unwrap(),
-                })?;
+                }).unwrap();
 
                 let event_send = Event {
                     pk_owner: event.project_name.clone(),
@@ -77,32 +81,33 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
                 };
 
                 let message = Message::InsertEvent(event_send);
-                let serialized_message = serde_json::to_string(&message)?;
+                let serialized_message = serde_json::to_string(&message).unwrap();
 
-                write.send(WsMessage::Text(serialized_message)).await?;
+                write.send(WsMessage::Text(serialized_message)).await.unwrap();
 
                 while let Some(msg) = read.next().await {
-                    let msg = msg?;
+                    let msg = msg.unwrap();
                     if let WsMessage::Text(text) = msg {
-                        let response: Message = serde_json::from_str(&text)?;
+                        let response: Message = serde_json::from_str(&text).unwrap();
                         match response {
                             Message::Response(events) => {
                                 println!("Received events: {:?}", events);
+                                write.close().await.expect("TODO: panic message");
                             }
                             Message::ResponseWriteId(id) => {
                                 println!("Received write id : {}", id);
+                                write.close().await.expect("TODO: panic message");
                             }
 
                             _ => {}
                         }
                     }
                 }
-
             }
-        },
+        }
         Err(e) => {
             println!("Error connecting to WebSocket: {}", e);
-        },
+        }
     }
 
     Ok(())
