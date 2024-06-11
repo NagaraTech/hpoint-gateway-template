@@ -40,7 +40,18 @@ pub async fn process_check_in_events() -> Result<i32,BoxedError> {
     }
 
     for (_, event) in user_check_in_events {
-        event.insert(db_conn).await.expect("Fail to Insert Relay Event Check In");
+        let exists = relay_events::Entity::find()
+            .filter(relay_events::Column::EventType.eq("CHECK-IN"))
+            .filter(relay_events::Column::Address.eq(event.address.clone().unwrap()))
+            .filter(relay_events::Column::TimeStamp.eq(event.time_stamp.clone().unwrap()))
+            .one(db_conn)
+            .await?
+            .is_some();
+
+        if !exists {
+            event.clone().insert(db_conn).await.expect("Fail to Insert Relay Event Check In");
+            println!("Inserted new event CHECK-IN : {:?} {:?}", event.address, event.time_stamp);
+        }
     }
 
     Ok(0)
@@ -80,17 +91,29 @@ pub async fn process_online_time_events() -> Result<i32, BoxedError> {
         let valid_data = get_continue_timestamps_data(data, valid_interval);
         for data in valid_data {
             if if_valid_online_task(data.clone(), online_max_duration, online_min_duration) {
-                let event = relay_events::ActiveModel {
-                    id: NotSet,
-                    event_type: ActiveValue::Set("ONLINE-TIME".parse().unwrap()),
-                    time_stamp: ActiveValue::Set(data[0].timestamp.clone()),
-                    address: ActiveValue::Set(address.clone()),
-                    project_name: ActiveValue::Set(data[0].project.clone()),
-                    sign: ActiveValue::Set(data[0].sign.clone()),
-                    event_date: ActiveValue::Set(current_date),
-                    duration: ActiveValue::Set(Option::from(duration_to_seconds(online_min_duration))),
-                };
-                event.insert(db_conn).await.expect("Fail to Insert Relay Event Online Time");
+                let exists = relay_events::Entity::find()
+                    .filter(relay_events::Column::EventType.eq("ONLINE-TIME"))
+                    .filter(relay_events::Column::Address.eq(address.clone()))
+                    .filter(relay_events::Column::TimeStamp.eq(data[0].timestamp.clone()))
+                    .one(db_conn)
+                    .await?
+                    .is_some();
+
+                if !exists {
+                    let event = relay_events::ActiveModel {
+                        id: NotSet,
+                        event_type: ActiveValue::Set("ONLINE-TIME".parse().unwrap()),
+                        time_stamp: ActiveValue::Set(data[0].timestamp.clone()),
+                        address: ActiveValue::Set(address.clone()),
+                        project_name: ActiveValue::Set(data[0].project.clone()),
+                        sign: ActiveValue::Set(data[0].sign.clone()),
+                        event_date: ActiveValue::Set(current_date),
+                        duration: ActiveValue::Set(Option::from(duration_to_seconds(online_min_duration))),
+                    };
+                    event.clone().insert(db_conn).await.expect("Fail to Insert Relay Event Online Time");
+                    println!("Inserted new event Online Time : {:?} {:?}", event.address, event.time_stamp);
+                }
+
             }
         }
     }
