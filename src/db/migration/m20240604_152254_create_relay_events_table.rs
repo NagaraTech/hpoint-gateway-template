@@ -25,6 +25,12 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(RelayEvents::Sign).char_len(64).not_null())
                     .col(ColumnDef::new(RelayEvents::EventDate).date().not_null())
                     .col(ColumnDef::new(RelayEvents::Duration).integer())
+                    .col(
+                        ColumnDef::new(RelayEvents::IsSent)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
                     .to_owned(),
             )
             .await
@@ -50,5 +56,6 @@ enum RelayEvents {
     ProjectName,
     Sign,
     EventDate,
-    Duration
+    Duration,
+    IsSent
 }

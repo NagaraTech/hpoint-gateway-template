@@ -14,6 +14,7 @@ pub struct Model {
     pub sign: String,
     pub event_date: Date,
     pub duration: Option<i32>,
+    pub is_sent: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

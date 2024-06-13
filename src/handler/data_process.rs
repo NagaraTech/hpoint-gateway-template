@@ -35,6 +35,7 @@ pub async fn process_check_in_events() -> Result<i32,BoxedError> {
                 sign: ActiveValue::Set(data.sign),
                 event_date: ActiveValue::Set(current_date),
                 duration: ActiveValue::Set(Option::from(0)),
+                is_sent: NotSet,
             }
         );
     }
@@ -109,6 +110,7 @@ pub async fn process_online_time_events() -> Result<i32, BoxedError> {
                         sign: ActiveValue::Set(data[0].sign.clone()),
                         event_date: ActiveValue::Set(current_date),
                         duration: ActiveValue::Set(Option::from(duration_to_seconds(online_min_duration))),
+                        is_sent: NotSet,
                     };
                     event.clone().insert(db_conn).await.expect("Fail to Insert Relay Event Online Time");
                     println!("Inserted new event Online Time : {:?} {:?}", event.address, event.time_stamp);

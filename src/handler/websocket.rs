@@ -55,6 +55,7 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
             let relay_events: Vec<relay_events::Model> = relay_events::Entity::find()
                 .filter(relay_events::Column::TimeStamp.gte(start_of_day))
                 .filter(relay_events::Column::TimeStamp.lte(end_of_day))
+                .filter(relay_events::Column::IsSent.eq(false))
                 .all(conn).await.expect("REASON");
 
             println!("{}", relay_events.len());
@@ -67,7 +68,7 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
                     timestamp: event.time_stamp.timestamp(),
                     address: event.address.clone(),
                     project_name: event.project_name.clone(),
-                    sign: event.sign,
+                    sign: event.sign.clone(),
                     sign_method: "ED25519".parse().unwrap(),
                     event_date: event.event_date.to_string(),
                     duration: event.duration.unwrap(),
@@ -84,6 +85,11 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
                 let serialized_message = serde_json::to_string(&message).unwrap();
 
                 write.send(WsMessage::Text(serialized_message)).await.unwrap();
+
+                let mut event_update:relay_events::ActiveModel = event.clone().into_active_model();
+                event_update.is_sent = Set(true);
+                event_update.update(&conn).await?;
+
             }
             while let Some(msg) = read.next().await {
                 let msg = msg.unwrap();
