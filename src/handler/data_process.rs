@@ -43,7 +43,7 @@ pub async fn process_check_in_events() -> Result<i32,BoxedError> {
         let exists = relay_events::Entity::find()
             .filter(relay_events::Column::EventType.eq("CHECK-IN"))
             .filter(relay_events::Column::Address.eq(event.address.clone().unwrap()))
-            .filter(relay_events::Column::TimeStamp.eq(event.time_stamp.clone().unwrap()))
+            .filter(relay_events::Column::EventDate.eq(event.event_date.clone().unwrap()))
             .one(db_conn)
             .await?
             .is_some();

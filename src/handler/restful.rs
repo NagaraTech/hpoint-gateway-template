@@ -1,7 +1,7 @@
 use axum::Json;
 use http::StatusCode;
 use crate::db::connection::get_db_conn;
-use crate::data::task::{PostTaskData,PostTaskResponse};
+use crate::data::task::{PostTaskData, PostTaskResponse};
 use crate::db::entities::post_data;
 use sea_orm::entity::*;
 use serde_json::value::Value;
@@ -26,12 +26,12 @@ pub async fn handle_event_post(Json(payload): Json<PostTaskData>) -> Result<Json
             sign: ActiveValue::Set(payload.sign),
             data: ActiveValue::Set(Option::from(json_value)),
         };
-        post_task.insert(db_conn).await.expect("Fail To Insert Post Data");
-        Ok(Json(PostTaskResponse{
+        post_task.clone().insert(db_conn).await.expect("Fail To Insert Post Data");
+        println!("Inserted new post data {:?} : {:?} {:?}", post_task.event_type.clone(), post_task.address.clone(), post_task.timestamp.clone());
+        Ok(Json(PostTaskResponse {
             message: "Success".to_string(),
         }))
-    }else {
+    } else {
         Err(StatusCode::INTERNAL_SERVER_ERROR)
     }
-
 }

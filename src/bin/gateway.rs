@@ -9,7 +9,7 @@ async fn main() {
     dotenv::dotenv().ok();
 
     tokio::spawn(async move {
-        let mut interval = time::interval(Duration::from_secs(90));
+        let mut interval = time::interval(Duration::from_secs(10));
         loop {
             interval.tick().await;
 
