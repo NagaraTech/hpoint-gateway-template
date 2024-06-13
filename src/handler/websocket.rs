@@ -88,7 +88,7 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
 
                 let mut event_update:relay_events::ActiveModel = event.clone().into_active_model();
                 event_update.is_sent = Set(true);
-                event_update.update(&conn).await?;
+                event_update.update(conn).await?;
 
             }
             while let Some(msg) = read.next().await {
