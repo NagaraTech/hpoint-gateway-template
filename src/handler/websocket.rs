@@ -91,23 +91,23 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
                 event_update.update(conn).await?;
 
             }
-            while let Some(msg) = read.next().await {
-                let msg = msg.unwrap();
-                if let WsMessage::Text(text) = msg {
-                    let response: Message = serde_json::from_str(&text).unwrap();
-                    match response {
-                        Message::Response(events) => {
-                            println!("Received events: {:?}", events);
-                            write.close().await.expect("TODO: panic message");
-                        }
-                        Message::ResponseWriteId(id) => {
-                            println!("Received write id : {}", id);
-                            write.close().await.expect("TODO: panic message");
-                        }
-                        _ => {}
-                    }
-                }
-            }
+            // while let Some(msg) = read.next().await {
+            //     let msg = msg.unwrap();
+            //     if let WsMessage::Text(text) = msg {
+            //         let response: Message = serde_json::from_str(&text).unwrap();
+            //         match response {
+            //             Message::Response(events) => {
+            //                 println!("Received events: {:?}", events);
+            //                 write.close().await.expect("TODO: panic message");
+            //             }
+            //             Message::ResponseWriteId(id) => {
+            //                 println!("Received write id : {}", id);
+            //                 write.close().await.expect("TODO: panic message");
+            //             }
+            //             _ => {}
+            //         }
+            //     }
+            // }
         }
         Err(e) => {
             println!("Error connecting to WebSocket: {}", e);

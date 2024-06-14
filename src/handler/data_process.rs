@@ -21,6 +21,9 @@ pub async fn process_check_in_events() -> Result<i32,BoxedError> {
         .filter(post_data::Column::EventType.eq("CHECK-IN"))
         .all(db_conn)
         .await?;
+    if check_in_data.len()< 1{
+        println!("No CHECK-IN data available");
+    }
 
     let mut user_check_in_events: HashMap<String, relay_events::ActiveModel> = HashMap::new();
 
@@ -83,6 +86,11 @@ pub async fn process_online_time_events() -> Result<i32, BoxedError> {
         .filter(post_data::Column::EventType.eq("ONLINE-TIME"))
         .all(db_conn)
         .await?;
+
+    if online_time_data.len()< 1{
+        println!("No ONLINE-TIME data available");
+    }
+
     online_time_data.sort_by_key(|event| event.timestamp);
 
     for data in online_time_data {
