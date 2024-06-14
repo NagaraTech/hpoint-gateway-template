@@ -34,7 +34,11 @@ impl MigrationTrait for Migration {
                             .string()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(RelayEvents::Sign).char_len(64).not_null())
+                    .col(
+                        ColumnDef::new(RelayEvents::Sign)
+                            .string()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(RelayEvents::EventDate).date().not_null())
                     .col(ColumnDef::new(RelayEvents::Duration).integer())
                     .col(
