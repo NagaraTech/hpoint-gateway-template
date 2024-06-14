@@ -58,7 +58,7 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
                 .filter(relay_events::Column::IsSent.eq(false))
                 .all(conn).await.expect("REASON");
 
-            println!("{}", relay_events.len());
+            println!("Events amount to send: {}", relay_events.len());
 
             for event in relay_events {
                 println!("Send Event:{}", event.event_type.clone());

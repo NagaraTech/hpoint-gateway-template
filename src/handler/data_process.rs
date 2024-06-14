@@ -48,6 +48,7 @@ pub async fn process_check_in_events() -> Result<i32,BoxedError> {
             .filter(relay_events::Column::EventType.eq("CHECK-IN"))
             .filter(relay_events::Column::Address.eq(event.address.clone().unwrap()))
             .filter(relay_events::Column::EventDate.eq(event.event_date.clone().unwrap()))
+            .filter(relay_events::Column::ProjectName.eq(event.project_name.clone().unwrap()))
             .one(db_conn)
             .await?
             .is_some();
@@ -106,6 +107,7 @@ pub async fn process_online_time_events() -> Result<i32, BoxedError> {
                     .filter(relay_events::Column::EventType.eq("ONLINE-TIME"))
                     .filter(relay_events::Column::Address.eq(address.clone()))
                     .filter(relay_events::Column::TimeStamp.eq(data[0].timestamp.clone()))
+                    .filter(relay_events::Column::ProjectName.eq(data[0].project.clone()))
                     .one(db_conn)
                     .await?
                     .is_some();
