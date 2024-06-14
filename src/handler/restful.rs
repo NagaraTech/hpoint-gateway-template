@@ -24,7 +24,7 @@ pub async fn handle_event_post(Json(payload): Json<PostTaskData>) -> Result<Json
             timestamp: ActiveValue::Set(DateTimeWithTimeZone::from(now)),
             sign_method: ActiveValue::Set(payload.sign_method),
             sign: ActiveValue::Set(payload.sign),
-            data: ActiveValue::Set(Option::from(json_value)),
+            data: ActiveValue::Set(now.date_naive()),
         };
         post_task.clone().insert(db_conn).await.expect("Fail To Insert Post Data");
 

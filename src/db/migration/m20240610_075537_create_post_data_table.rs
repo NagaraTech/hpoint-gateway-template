@@ -28,7 +28,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(PostData::Timestamp).timestamp_with_time_zone().not_null())
                     .col(ColumnDef::new(PostData::SignMethod).char_len(32).not_null())
                     .col(ColumnDef::new(PostData::Sign).char_len(64).not_null())
-                    .col(ColumnDef::new(PostData::Data).json())
+                    .col(ColumnDef::new(PostData::Data).date().not_null())
                     .to_owned(),
             )
             .await

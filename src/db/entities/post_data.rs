@@ -13,7 +13,7 @@ pub struct Model {
     pub timestamp: DateTimeWithTimeZone,
     pub sign_method: String,
     pub sign: String,
-    pub data: Option<Json>,
+    pub data: Date,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
