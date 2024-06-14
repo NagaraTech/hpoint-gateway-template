@@ -27,7 +27,8 @@ pub async fn handle_event_post(Json(payload): Json<PostTaskData>) -> Result<Json
             data: ActiveValue::Set(Option::from(json_value)),
         };
         post_task.clone().insert(db_conn).await.expect("Fail To Insert Post Data");
-        println!("Inserted new post data {:?} : {:?} {:?}", post_task.event_type.clone(), post_task.address.clone(), post_task.timestamp.clone());
+        let now = Utc::now().timestamp();
+        println!("Inserted new post data {:?} : {:?} {:?}", post_task.event_type.clone(), post_task.address.clone(), now);
         Ok(Json(PostTaskResponse {
             message: "Success".to_string(),
         }))
