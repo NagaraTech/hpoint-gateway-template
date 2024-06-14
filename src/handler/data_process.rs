@@ -52,6 +52,8 @@ pub async fn process_check_in_events() -> Result<i32,BoxedError> {
         if !exists {
             event.clone().insert(db_conn).await.expect("Fail to Insert Relay Event Check In");
             println!("Inserted new event CHECK-IN : {:?} {:?}", event.address, event.time_stamp);
+        }else {
+            println!("Event CHECK-IN Exist: {:?} {:?}", event.address, event.time_stamp);
         }
     }
 
@@ -113,7 +115,9 @@ pub async fn process_online_time_events() -> Result<i32, BoxedError> {
                         is_sent: NotSet,
                     };
                     event.clone().insert(db_conn).await.expect("Fail to Insert Relay Event Online Time");
-                    println!("Inserted new event Online Time : {:?} {:?}", event.address, event.time_stamp);
+                    println!("Inserted new event Online-Time : {:?} {:?}", event.address, event.time_stamp);
+                }else {
+                    println!("Event Online-Time Exist: {:?} {:?}", address.clone(), data[0].timestamp.clone());
                 }
 
             }

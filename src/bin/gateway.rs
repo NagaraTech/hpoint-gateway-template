@@ -12,13 +12,8 @@ async fn main() {
         let mut interval = time::interval(Duration::from_secs(10));
         loop {
             interval.tick().await;
-
-
             process_check_in_events().await.expect("Process Event Data Error");
             process_online_time_events().await.expect("Process Event Data Error");
-
-
-
             websocket_event_send().await.expect("Websocket Sends Event Data Error");
         }
     });

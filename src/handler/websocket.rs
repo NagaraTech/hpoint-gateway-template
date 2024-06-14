@@ -61,7 +61,7 @@ pub async fn websocket_event_send() -> Result<(), Box<dyn std::error::Error>> {
             println!("{}", relay_events.len());
 
             for event in relay_events {
-                println!("{}", event.event_type.clone());
+                println!("Send Event:{}", event.event_type.clone());
 
                 let send_event_bytes: Vec<u8> = bincode::serialize(&crate::handler::gateway::Event {
                     event_type: crate::handler::gateway::EventType::from_str_name(event.event_type.clone()),
