@@ -18,8 +18,16 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(PostData::Project).char_len(64).not_null())
-                    .col(ColumnDef::new(PostData::EventType).char_len(32).not_null())
+                    .col(
+                        ColumnDef::new(PostData::Project)
+                            .string()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PostData::EventType)
+                            .string()
+                            .not_null(),
+                    )
                     .col(
                         ColumnDef::new(PostData::Address)
                             .string()

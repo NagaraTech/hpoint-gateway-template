@@ -18,14 +18,22 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(RelayEvents::EventType).char_len(32).not_null())
+                    .col(
+                        ColumnDef::new(RelayEvents::EventType)
+                            .string()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(RelayEvents::TimeStamp).timestamp_with_time_zone().not_null())
                     .col(
                         ColumnDef::new(RelayEvents::Address)
                             .string()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(RelayEvents::ProjectName).char_len(64).not_null())
+                    .col(
+                        ColumnDef::new(RelayEvents::ProjectName)
+                            .string()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(RelayEvents::Sign).char_len(64).not_null())
                     .col(ColumnDef::new(RelayEvents::EventDate).date().not_null())
                     .col(ColumnDef::new(RelayEvents::Duration).integer())
