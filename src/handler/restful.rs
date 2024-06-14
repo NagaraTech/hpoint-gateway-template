@@ -13,21 +13,21 @@ pub async fn handle_event_post(Json(payload): Json<PostTaskData>) -> Result<Json
     // format!("Received field1: {}, field2: {}", payload.field1, payload.field2)
     let db_conn = get_db_conn().await;
 
+    let now = Utc::now();
     let json_value: Value = serde_json::to_value(payload.data).unwrap();
-    let datetime_utc: DateTime<Utc> = Utc.timestamp(payload.timestamp as i64, 0);
     if payload.address.len() > 0 {
         let post_task = post_data::ActiveModel {
             id: NotSet,
             project: ActiveValue::Set(payload.project),
             event_type: ActiveValue::Set(payload.event_type),
             address: ActiveValue::Set(payload.address),
-            timestamp: ActiveValue::Set(DateTimeWithTimeZone::from(datetime_utc)),
+            timestamp: ActiveValue::Set(DateTimeWithTimeZone::from(now)),
             sign_method: ActiveValue::Set(payload.sign_method),
             sign: ActiveValue::Set(payload.sign),
             data: ActiveValue::Set(Option::from(json_value)),
         };
         post_task.clone().insert(db_conn).await.expect("Fail To Insert Post Data");
-        let now = Utc::now().timestamp();
+
         println!("Inserted new post data {:?} : {:?} {:?}", post_task.event_type.clone(), post_task.address.clone(), now);
         Ok(Json(PostTaskResponse {
             message: "Success".to_string(),
