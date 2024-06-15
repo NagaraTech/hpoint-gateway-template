@@ -101,7 +101,7 @@ pub async fn process_online_time_events() -> Result<i32, BoxedError> {
 
     for (address, data) in user_online_task_data {
         let valid_data = get_continue_timestamps_data(data, valid_interval);
-        println!("Get continues online data: {:?}",valid_data);
+        println!("Get continues online data: {:?}",valid_data.len());
         for data in valid_data {
             if if_valid_online_task(data.clone(), online_max_duration, online_min_duration) {
                 println!("Found valid online time task {}", data[1].project);
